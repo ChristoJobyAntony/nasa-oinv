@@ -1,18 +1,39 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <h1>Interactive Data Visualisation</h1>
+  <div id="list-rendering">
+  <ol>
+    <li v-bind:key="node.identity" v-for="node in nodes">
+      {{ node.labels[0] }} {{ node.properties.name }} {{ node.properties.code }}
+    </li>
+  </ol>
+  </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import HelloWorld from './components/HelloWorld.vue';
+import { Vue } from 'vue-class-component';
+import axios from 'axios';
 
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class App extends Vue {}
+export default class App extends Vue {
+  nodes?: any[];
+
+  data() {
+    return {
+      nodes: []
+    }
+  }
+
+  mounted(): void {
+    axios.get('http://readmythoughts.ddns.net:7070/', {
+      params: {
+        string : 'MATCH (n:Dataset) WHERE id(n) = $id RETURN n',
+        data : { id : 2131 }
+      }
+    }).then((response: any) =>{
+        console.log("RESPONSE BODY");
+        this.nodes = response.data
+    })
+  }
+}
 </script>
 
 <style>
