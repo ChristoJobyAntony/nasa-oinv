@@ -21,3 +21,22 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Datasets
+datasets/data/agency/agency.json
+datasets/data/agency/prettyAgency.json
+datasets/data/bureauCode/bureauCode.json
+datasets/data/bureauCode/prettyBureauCode.json
+datasets/data/contactPoint/contactPoint.json
+datasets/data/contactPoint/prettyContactPoint.json
+datasets/data/keyword/keyword.json
+datasets/data/keyword/prettyKeyword.json
+datasets/data/programCode/prettyProgramCode.json
+datasets/data/programCode/programCode.json
+datasets/data/publisher/prettyPublisher.json
+datasets/data/publisher/publisher.json
+datasets/data/rawData/data.json
+datasets/data/rawData/rawBureauCode.csv
+datasets/data/rawData/rawProgramCode.csv
+datasets/data/theme/prettyTheme.json
+datasets/data/theme/theme.json
