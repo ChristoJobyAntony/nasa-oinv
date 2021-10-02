@@ -19,21 +19,21 @@ body {
 .nav-bar-left {
     padding : 10px;
     float: left;
-    background-color: coral;
-    /* width: 30%; */
+    background-color: #0074B7;
+    width: 30%;
     height: 95%;
     overflow-x: scroll;
 }
 
 .content {
     float: left;
-    background-color: grey;
-    /* width: 70%; */
+    background-color: #175873;
+    width: 70%;
     height: 95%;
 }
 
-.Program {
-    background-color: chocolate;
+.title {
+    margin-left: 10px;
 }
 
 #cy {
