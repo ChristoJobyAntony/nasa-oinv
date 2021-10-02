@@ -1,0 +1,68 @@
+{
+    "layout": {
+        "name": "circle",
+        "spacingFactor": 0.8,
+        "avoidOverlap": true,
+        "animate": true,
+        "animationDuration": 500
+    },
+    "style": [
+        {
+            "selector": "edge",
+            "style": {
+                "label": "data(name)",
+                "text-rotation": "autorotate"
+            }
+        },
+        {
+            "selector": "node",
+            "style": {
+                "label": "data(name)",
+                "text-wrap": "ellipsis",
+                "text-max-width": "200px"
+            }
+        },
+        {
+            "selector": ".Dataset",
+            "style": {
+                "background-color": "Pink"
+            }
+        },
+        {
+            "selector": ".Bureau",
+            "style": {
+                "background-color": "BlueViolet"
+            }
+        },
+        {
+            "selector": ".Program",
+            "style": {
+                "background-color": "Beige"
+            }
+        },
+        {
+            "selector": ".Keyword",
+            "style": {
+                "background-color": "Indigo"
+            }
+        },
+        {
+            "selector": ".Theme",
+            "style": {
+                "background-color": "ForestGreen"
+            }
+        },
+        {
+            "selector": ".Publisher",
+            "style": {
+                "background-color": "Teal"
+            }
+        },
+        {
+            "selector": ".ContactPoint",
+            "style": {
+                "background-color": "Crimson"
+            }
+        }
+    ]
+}
