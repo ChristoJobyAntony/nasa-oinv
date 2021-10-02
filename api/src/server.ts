@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express'
 import neo4j from 'neo4j-driver'
 
-type Identity = {low:number}
-type Relation = {identity : Identity, type : string}
-type Node = {identity : Identity, labels : string[], properties : {name : string}}
-type Dataset = {identity : Identity, labels : string[], properties : {[key : string] : any}}
+interface Identity {low:number}
+interface Relation {identity : Identity, type : string}
+interface Node {identity : Identity, labels : string[], properties : {name : string}}
+interface Dataset {identity : Identity, labels : string[], properties : {[key : string] : any}}
 export const app:express.Application = express()
 const driver = neo4j.driver('neo4j://localhost:7687', neo4j.auth.basic('neo4j', 'tony2003'))
 const cors = require('cors')
