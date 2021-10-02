@@ -1,39 +1,38 @@
 <template>
   <nav>
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo">
-        <img src="./assets/icon.png">
-        The Black Sheep
-      </a>
+    <div class="nav-wrapper deep-purple darken-4">
+      <img class="title" style="margin-top: 5px" src="./assets/icon.png">
+      <a href="#" class="brand-logo title">The Black Sheep</a>
+
+        <div class="right input-field" style="margin-right: 10px">
+          <input type="text" placeholder="Search for dataset">
+        </div>
     </div>
   </nav>
   <div class="row main">
 
-    <div class="col s3 nav-bar-left card">
+    <div class="s3 nav-bar-left card">
       <div class="card-content">
         <span class="card-title">
-            {{ node === null ? "Select A Node to Know more about" : node.properties.name }}
+            {{ node === null ? "Select a node to Know more about it" : node.properties.name }}
         </span>
-        <h6 id="node-type" v-if="node !== null">
-          Type: {{ node.type }}
-        </h6>
         <div id="node-properties" v-if="node !== null">
           <!-- Fill in with node info -->
           <button class="waves-effect waves-light btn" style="width: 100%" @click="setNode">View Relations</button>
-          
+          <button class="waves-effect waves-light btn" v-bind="node" :href="node.properties.landingPage">Check it out!</button>
+          <h6 id="node-type" v-if="node !== null">Type: {{ node.type }}</h6>
+
           <ul v-bind:key="name" v-for="(value, name) in node.properties" class="collection">
-             <li class="collection-item" v-if="name !== 'name'">{{ name }}: {{ value }} </li>
+             <li class="collection-item" v-if="!['name', 'landingPage'].includes(name)">
+              <b>{{ name }}</b> {{ value }}
+             </li>
           </ul>
-         
         </div>
       </div>
     </div>
 
-    <div class="col s10"> </div>
     <div id="cy" class="content"></div>
   </div>
-
-  
 </template>
 
 <script lang="ts">
