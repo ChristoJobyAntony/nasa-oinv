@@ -1,0 +1,41 @@
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+    margin: 0px;
+    overflow-y : hidden;
+}
+
+.main{
+    height: 100%;
+}
+
+
+.nav-bar-left {
+    padding : 10px;
+    float: left;
+    background-color: coral;
+    /* width: 30%; */
+    height: 95%;
+    overflow-x: scroll;
+}
+
+.content {
+    float: left;
+    background-color: grey;
+    /* width: 70%; */
+    height: 95%;
+}
+
+.Program {
+    background-color: chocolate;
+}
+
+#cy {
+    display: block;
+}
