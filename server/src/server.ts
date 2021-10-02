@@ -8,7 +8,9 @@ interface Dataset {identity : Identity, labels : string[], properties : {[key : 
 export const app:express.Application = express()
 const driver = neo4j.driver('neo4j://localhost:7687', neo4j.auth.basic('neo4j', 'tony2003'))
 const cors = require('cors')
+
 app.use(cors({ origin: 'http://blacksheep.zapto.org:5555' }))
+app.use(express.static('/home/christo/Code/nasa-oinv/server/app'))
 
 app.get('/Dataset/getAllRelations',
   // Request Body : {identity : <dataset-id>}
@@ -52,7 +54,7 @@ app.get('/Node/getAllRelations',
     const session = driver.session()
     try {
       const result = await session.run(
-        'MATCH (d)-[relation]-(node) WHERE id(d) = $identity return relation, node',
+        'MATCH (d)-[relation]-(node) WHERE id(d) = $identity RETURN relation, node LIMIT 100',
         { identity: identity }
       )
       const dat = []
@@ -96,7 +98,7 @@ app.get('/Dataset/info',
       }
       console.log(`Query for relations to ${identity} done, sending response `)
 
-      res.send(dat)
+      res.send(dat[0])
     } catch (error) {
       console.log('Query Failed !')
       console.log(error)
@@ -109,7 +111,69 @@ app.get('/Dataset/info',
   }
 )
 
-app.get('/api', async (req : Request, res : Response) => {
+app.get('/Node/info',
+  // Request Body : {identity : number}
+  // Response Body : {identity : number, type: string, properties : {name: string, ...}}
+  async (req : Request, res : Response) => {
+    const identity : number = Number(req.query.identity as string)
+    const session = driver.session()
+    try {
+      const result = await session.run(
+        'MATCH (node) WHERE id(node) = $identity return node',
+        { identity: identity }
+      )
+
+      const dat = []
+      for (const record of result.records) {
+        console.log(record.toObject())
+        const dataset : Dataset = record.get('node')
+        dat.push({ identity: dataset.identity.low, type: dataset.labels[0], properties: dataset.properties })
+      }
+      console.log(`Query for info about ${identity} done, sending response `)
+
+      res.send(dat[0])
+    } catch (error) {
+      console.log('Query Failed !')
+      console.log(error)
+
+      res.status(400)
+      res.send(error)
+    } finally {
+      await session.close()
+    }
+  }
+)
+
+app.get('/Dataset/get', 
+  async (req: Request, res : Response) =>{
+    const session = driver.session()
+    try {
+      const result = await session.run(
+        'MATCH (node : Dataset) RETURN node LIMIT  25',
+      )
+
+      const dat = []
+      for (const record of result.records) {
+        console.log(record.toObject())
+        const dataset : Dataset = record.get('node')
+        dat.push({ identity: dataset.identity.low, type: dataset.labels[0], properties: {name : dataset.properties.name} })
+      }
+      console.log(`Query to get some datasets `)
+
+      res.send(dat)
+    } catch (error) {
+      console.log('Query Failed !')
+      console.log(error)
+
+      res.status(400)
+      res.send(error)
+    } finally {
+      await session.close()
+    }
+  })
+
+
+app.get('/', async (req : Request, res : Response) => {
   const query : string = req.query.string as string
   const data : any = JSON.parse(req.query.data as string)
   const session = driver.session()
@@ -131,6 +195,9 @@ app.get('/api', async (req : Request, res : Response) => {
   }
 })
 
-app.get('app', (req :Request, res: Response) =>{
-  res.send("The App")
+app.get('/app', (req :Request, res: Response) =>{
+  console.log('app visited');
+  
+  res.sendFile('/home/christo/Code/nasa-oinv/server/app/index.html')
+
 })

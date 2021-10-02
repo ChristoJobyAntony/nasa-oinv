@@ -46,6 +46,7 @@ exports.app = (0, express_1.default)();
 var driver = neo4j_driver_1.default.driver('neo4j://localhost:7687', neo4j_driver_1.default.auth.basic('neo4j', 'tony2003'));
 var cors = require('cors');
 exports.app.use(cors({ origin: 'http://blacksheep.zapto.org:5555' }));
+exports.app.use(express_1.default.static('/home/christo/Code/nasa-oinv/server/app'));
 exports.app.get('/Dataset/getAllRelations', 
 // Request Body : {identity : <dataset-id>}
 // Response Bode : [{relation : {identity : number, type : string}, node : {identity : number, name : string, type : string}}]
@@ -102,7 +103,7 @@ function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 3, 4, 6]);
-                return [4 /*yield*/, session.run('MATCH (d)-[relation]-(node) WHERE id(d) = $identity return relation, node', { identity: identity })];
+                return [4 /*yield*/, session.run('MATCH (d)-[relation]-(node) WHERE id(d) = $identity RETURN relation, node LIMIT 100', { identity: identity })];
             case 2:
                 result = _b.sent();
                 dat = [];
@@ -155,7 +156,7 @@ function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                     dat.push({ identity: dataset.identity.low, type: dataset.labels[0], properties: dataset.properties });
                 }
                 console.log("Query for relations to " + identity + " done, sending response ");
-                res.send(dat);
+                res.send(dat[0]);
                 return [3 /*break*/, 6];
             case 3:
                 error_3 = _b.sent();
@@ -172,8 +173,86 @@ function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         }
     });
 }); });
+exports.app.get('/Node/info', 
+// Request Body : {identity : number}
+// Response Body : {identity : number, type: string, properties : {name: string, ...}}
+function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var identity, session, result, dat, _i, _a, record, dataset, error_4;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                identity = Number(req.query.identity);
+                session = driver.session();
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, 4, 6]);
+                return [4 /*yield*/, session.run('MATCH (node) WHERE id(node) = $identity return node', { identity: identity })];
+            case 2:
+                result = _b.sent();
+                dat = [];
+                for (_i = 0, _a = result.records; _i < _a.length; _i++) {
+                    record = _a[_i];
+                    console.log(record.toObject());
+                    dataset = record.get('node');
+                    dat.push({ identity: dataset.identity.low, type: dataset.labels[0], properties: dataset.properties });
+                }
+                console.log("Query for info about " + identity + " done, sending response ");
+                res.send(dat[0]);
+                return [3 /*break*/, 6];
+            case 3:
+                error_4 = _b.sent();
+                console.log('Query Failed !');
+                console.log(error_4);
+                res.status(400);
+                res.send(error_4);
+                return [3 /*break*/, 6];
+            case 4: return [4 /*yield*/, session.close()];
+            case 5:
+                _b.sent();
+                return [7 /*endfinally*/];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); });
+exports.app.get('/Dataset/get', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var session, result, dat, _i, _a, record, dataset, error_5;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                session = driver.session();
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, 4, 6]);
+                return [4 /*yield*/, session.run('MATCH (node : Dataset) RETURN node LIMIT  25')];
+            case 2:
+                result = _b.sent();
+                dat = [];
+                for (_i = 0, _a = result.records; _i < _a.length; _i++) {
+                    record = _a[_i];
+                    console.log(record.toObject());
+                    dataset = record.get('node');
+                    dat.push({ identity: dataset.identity.low, type: dataset.labels[0], properties: { name: dataset.properties.name } });
+                }
+                console.log("Query to get some datasets ");
+                res.send(dat);
+                return [3 /*break*/, 6];
+            case 3:
+                error_5 = _b.sent();
+                console.log('Query Failed !');
+                console.log(error_5);
+                res.status(400);
+                res.send(error_5);
+                return [3 /*break*/, 6];
+            case 4: return [4 /*yield*/, session.close()];
+            case 5:
+                _b.sent();
+                return [7 /*endfinally*/];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); });
 exports.app.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var query, data, session, result, error_4;
+    var query, data, session, result, error_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -191,10 +270,10 @@ exports.app.get('/', function (req, res) { return __awaiter(void 0, void 0, void
                 res.send(result.records);
                 return [3 /*break*/, 6];
             case 3:
-                error_4 = _a.sent();
+                error_6 = _a.sent();
                 console.log('Query Failed !');
                 res.status(400);
-                res.send(error_4);
+                res.send(error_6);
                 return [3 /*break*/, 6];
             case 4: return [4 /*yield*/, session.close()];
             case 5:
@@ -204,4 +283,8 @@ exports.app.get('/', function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); });
+exports.app.get('/app', function (req, res) {
+    console.log('app visited');
+    res.sendFile('/home/christo/Code/nasa-oinv/server/app/index.html');
+});
 //# sourceMappingURL=server.js.map
