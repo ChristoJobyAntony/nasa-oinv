@@ -109,7 +109,7 @@ app.get('/Dataset/info',
   }
 )
 
-app.get('/', async (req : Request, res : Response) => {
+app.get('/api', async (req : Request, res : Response) => {
   const query : string = req.query.string as string
   const data : any = JSON.parse(req.query.data as string)
   const session = driver.session()
@@ -129,4 +129,8 @@ app.get('/', async (req : Request, res : Response) => {
   } finally {
     await session.close()
   }
+})
+
+app.get('app', (req :Request, res: Response) =>{
+  res.send("The App")
 })
