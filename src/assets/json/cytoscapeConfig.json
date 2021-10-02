@@ -1,9 +1,9 @@
 {
     "layout": {
-        "name": "circle",
-        "spacingFactor": 0.8,
+        "name" : "concentric",
+        "spacingFactor": 3,
         "avoidOverlap": true,
-        "animate": true,
+        "animate" : true,
         "animationDuration": 500
     },
     "style": [

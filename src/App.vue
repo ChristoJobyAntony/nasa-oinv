@@ -1,6 +1,17 @@
 <template>
   <div class="nav-bar-top">Navigation Bar</div>
-  <div class="nav-bar-left">Nav-Bar Left</div>
+  <div class="nav-bar-left">
+        <h5 id="">
+            {{ node === null ? "Select A Node to Know more about" : node.properties.name }}
+        </h5>
+        <h6 id="node-type"></h6>
+        <ol id="node-properties" v-if="node !== null">
+            <!-- Fill in with node info -->
+            <div>Description: {{ node.properties.description }}</div>
+            <div>Landing Page: {{ node.properties.landingPage }}</div>
+            <button>View Relations</button>
+        </ol>
+    </div>
 
   <div id="cy" class="content"></div>
 </template>
@@ -28,17 +39,19 @@ interface Dataset {
 export default class App extends Vue {
   cytoscape?: cytoscape.Core;
   nodeID!: number;
+  node?: Dataset;
 
   data(): any {
     return {
       nodeID: 2131,
+      node: null
     };
   }
 
   async mounted(): Promise<void> {
     console.log("mounted");
-    // Initialise cytoscape
     await this.createPrimaryNode(this.nodeID)
+    this.cytoscape!.on('tap', 'node', this.updateInfoPanel)
   }
 
   async fetchDataset(nodeID: number): Promise<Dataset> {
@@ -58,7 +71,7 @@ export default class App extends Vue {
   async createPrimaryNode(nodeID: number): Promise<void> {
     const dataset = await this.fetchDataset(nodeID);
     const relationships = await this.fetchDatasetRelations(nodeID);
-    console.log(dataset);
+    this.node = dataset;
     console.log(relationships);
 
     let nodes: cytoscape.ElementDefinition[] = [{
@@ -87,13 +100,25 @@ export default class App extends Vue {
       })
     }
 
-    console.log(nodes);
     const config = Object.assign(cytoscapeConfig, {
       container: document.getElementById('cy'),
       elements: nodes
     })
-    console.log(config);
+
+    console.log(dataset)
     this.cytoscape = cytoscape(config as cytoscape.CytoscapeOptions)
+  }
+
+  async updateInfoPanel(evt: cytoscape.EventObject) : Promise<void> {
+      const node = evt.target
+      console.log('Tapped ' + node.id())
+      const response = await axios.get('/Node/info', {params: { identity : node.id()}})
+      this.node = response.data
+      console.log(response.data)
+  }
+  
+  async getRelations(nodeID : number) : Promise<void> {
+    const response = 'test'   
   }
 }
 </script>
