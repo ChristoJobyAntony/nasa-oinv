@@ -6,8 +6,8 @@ After=network.target
 [Service]
 Environment=NODE_PORT=3001
 Type=simple
-User=ubuntu
-ExecStart=/usr/bin/node /home/christo/Code/nasa-oinv/nasa-oinv/API/build/index.js
+User=christo
+ExecStart=/usr/bin/node /home/christo/Code/nasa-oinv/api/build/index.js
 Restart=on-failure
 
 [Install]
