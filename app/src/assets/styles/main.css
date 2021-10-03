@@ -47,7 +47,7 @@ body {
     background-color: #145DA0;
 }
 #cy-container{
-    height: 90%;
+    height: 100%;
     width: 100%;
     padding: 0;
     margin: 0;
@@ -61,6 +61,15 @@ body {
 
 .title {
     margin-left: 10px;
+}
+
+#search-bar{
+    background-color: white;
+    border-radius: 10px;
+    padding-left: 10px;
+    color: black;
+    margin-right: 10px;
+    
 }
 
 #cy {
@@ -82,4 +91,10 @@ body {
 
 .w-100 {
     width: 100%;
+}
+
+#indicator-overlay{
+    opacity: 80%;
+    background-color: grey;
+    z-index: 9999;
 }

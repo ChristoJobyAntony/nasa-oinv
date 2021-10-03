@@ -1,23 +1,22 @@
 <template>
     <div class="row main">
         <div class="col s3 info panel left">
-          <div v-if="node === null">
-            <div class="row" style="margin-top: 10px;">
-              <div class="col s10 offset-s1">
-                <input class="input-field white-text" placeholder="Search for a dataset" type="text" v-model="searchText" v-on:keyup.enter="searchDatasets">
-              </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col s12 ">
+              <input id="search-bar" class="input-field" placeholder="Search for a dataset" type="text" v-model="searchText" v-on:keyup.enter="searchDatasets">
             </div>
-            <ul class="collection">
-              <div v-bind:key="node.name" v-for="node in searchResults">
-                <li class="collection-item" style="margin-bottom: 5px">
-                  [{{ node.type }} - {{ node.identity.low }}] <br>
-                  {{ node.name }}
-                </li>
-              </div>
-            </ul>
           </div>
+          <ul class="collection" v-if="node === null">
+            <div v-bind:key="node.name" v-for="node in searchResults">
+              <li class="collection-item" style="margin-bottom: 5px" @click="setUpCytoscape(node.identity.low)">
+                [{{ node.type }} - {{ node.identity.low }}] <br>
+                {{ node.name }}
+              </li>
+            </div>
+            <div class="collection-item" v-if="searchResults.length === 0">No datasets found</div>
+          </ul>
           <div v-else>
-            <a :href="node.properties.landingPage" target="_blank">
+            <a :href="node.properties.landingPage" target="_blank" class="hoverable">
               <h5 id="node-title">{{ node.properties.name }}</h5>
             </a>
             <hr>
@@ -25,17 +24,16 @@
             <div id="node-properties">
             <!-- Fill in with node info -->
             <button class="waves-effect waves-light btn w-100" @click="setNode">View Relations</button>
-            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" target="_blank">Check it out!</a>
+            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" target="_blank" style="margin-top: 5px">Check it out!</a>
   
-            <h6 id="node-type">Type: {{ node.type }}</h6>
+            <!-- <h6 id="node-type">Type: {{ node.type }}</h6> -->
 
             <ul class="collection">
+                <li class="collection-item node-property"><b>Type</b><hr>{{ node.type }}</li>
                 <div v-bind:key="name" v-for="(value, name) in node.properties" >
                 <li class="collection-item node-property" >
                     <b>{{ name }}</b><hr>
-                    <p>
-                    {{ value }}
-                    </p>
+                    <p>{{ value }}</p>
                 </li>
                 </div>
             </ul>
@@ -47,12 +45,13 @@
             <nav>
                 <div class="nav-wrapper deep-purple darken-4">
                 <img class="title" style="margin-top: 5px" src="./assets/icon.png">
-                <a href="#" class="brand-logo title">The Black Sheep</a>
+                <a href="#" class="brand-logo title">Data Visualizer</a>
                 </div>
             </nav>
 
             <div id="cy-container" class="col s9">
-                <div id="cy" class="content"></div>
+                <div id="cy" class="content">
+                </div>
             </div>
 
         </div>     
@@ -81,8 +80,8 @@ interface Dataset {
 }
 
 export default class App extends Vue {
+  node?: Dataset | null;
   cytoscape?: cytoscape.Core;
-  node?: Dataset;
   searchText!: string;
   searchResults!: Dataset[];
 
@@ -97,17 +96,19 @@ export default class App extends Vue {
   async mounted(): Promise<void> {
     console.log("mounted");
     M.AutoInit()
+    const randomID = this.randomNumber(2131, 58370)
+    await this.setUpCytoscape(randomID)
+  }
+
+  randomNumber(min: number, max: number): number {
+    return min + Math.floor(Math.random() * (max - min + 1))
   }
 
   async searchDatasets(): Promise<void> {
+    this.node = null
     this.searchResults.splice(0, this.searchResults.length)
     const response = await axios.get('/Node/search', { params: { term: this.searchText }})
     this.searchResults = response.data
-    console.log(response.data)
-    /*
-    await this.setUpCytoscape(2131)
-    await this.addRelations(2131)
-    */
   }
 
   async fetchNode(id: number): Promise<Dataset> {
@@ -127,6 +128,7 @@ export default class App extends Vue {
   async setUpCytoscape(id: number): Promise<void> {
     const dataset = await this.fetchNode(id)
     this.node = dataset
+    this.searchResults.splice(0, this.searchResults.length)
     let nodes: cytoscape.ElementDefinition[] = [{
       group: "nodes",
       data: { id : dataset.identity.toString(), name: dataset.properties.name },
@@ -140,6 +142,8 @@ export default class App extends Vue {
     })
 
     this.cytoscape = cytoscape(config as cytoscape.CytoscapeOptions)
+
+    await this.addRelations(id)
     this.cytoscape!.on('select', 'node', async (evt) => {
       this.node = await this.fetchNode(evt.target.id())
     })
