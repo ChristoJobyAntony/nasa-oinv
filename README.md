@@ -2,7 +2,7 @@
 
 ## INTRODUCTION TO WEB APPLICATION
 
-The **Interative Data Visualizer** is a Web App that encompasses 44000+ datasets in a way that is manageable by even amateur researchers. These data sets can be used as referances or for extracting valuable information. 
+The **Interative Data Visualizer** is a Web App that encompasses 44000+ datasets in a way that is manageable by even amateur researchers. These data sets can be used as referances or for extracting valuable information. The need for access to credible and reliable sources of information is the aim of this application. 
 
 
 ## HOW WE CREATED IT.
@@ -14,3 +14,8 @@ The back end of our software is written in Node.js and Typescript.
 
 ### FRONT END
 
+The front end of our software is written in TypeScript with Vue JS framework.
+
+### HOW TO WORK IT OUT!!
+
+Once you click on Web App link you will find the details of a particular node. By clicking on *Veiw Relations* you will be redirected to a page with multiple data sets. The *Check it out!* button takes you to the link which contains the data set.
