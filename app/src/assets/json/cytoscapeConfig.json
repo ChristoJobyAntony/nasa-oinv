@@ -1,6 +1,7 @@
 {
     "maxZoom": 1e2,
     "minZoom": 1e-2,
+    "wheelSensitivity": 1,
     "layout": {
         "name" : "concentric",
         "spacingFactor": 5,
@@ -8,6 +9,7 @@
         "animate" : true,
         "animationDuration": 500
     },
+    "active-bg-color" : "white",
     "style": [
         {
             "selector": "edge",
@@ -36,19 +38,19 @@
         {
             "selector": ".Bureau",
             "style": {
-                "background-color": "BlueViolet"
+                "background-color": "Magenta"
             }
         },
         {
             "selector": ".Program",
             "style": {
-                "background-color": "Beige"
+                "background-color": "OrangeRed"
             }
         },
         {
             "selector": ".Keyword",
             "style": {
-                "background-color": "Indigo"
+                "background-color": "Aquamarine"
             }
         },
         {
@@ -60,13 +62,27 @@
         {
             "selector": ".Publisher",
             "style": {
-                "background-color": "Teal"
+                "background-color": "SpringGreen"
             }
         },
         {
             "selector": ".ContactPoint",
             "style": {
                 "background-color": "Crimson"
+            }
+        },
+        {
+            "selector" : ".Agency",
+            "style" : {
+                "background-color" : "Gold"
+            }
+        },
+        {
+            "selector" : "node:active",
+            "style" :{
+                "ghost" :  "yes",
+                "overlay-color" : "white",
+                "overlay-opacity" : 0.2
             }
         }
     ]

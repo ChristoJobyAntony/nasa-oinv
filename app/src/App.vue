@@ -3,18 +3,20 @@
         <div class="col s3 info panel left">
           <div class="row" style="margin-top: 10px;">
             <div class="col s12 ">
-              <input id="search-bar" class="input-field" placeholder="Search for a dataset" type="text" v-model="searchText" v-on:keyup.enter="searchDatasets">
+              <input id="search-bar" class="input-field" placeholder="Search for a dataset" type="text" v-model="searchText" @keyup="searchDatasets" v-on:keyup.enter="searchDatasets">
             </div>
           </div>
-          <ul class="collection" v-if="node === null">
+          <hr>
+          <div class="collection" style="border-color:transparent" v-if="node === null">
             <div v-bind:key="node.name" v-for="node in searchResults">
-              <li class="collection-item" style="margin-bottom: 5px" @click="setUpCytoscape(node.identity.low)">
+              
+              <div class="hoverable collection-item search-result-item" style="margin-bottom: 5px" @click="setUpCytoscape(node.identity.low)">
                 [{{ node.type }} - {{ node.identity.low }}] <br>
                 {{ node.name }}
-              </li>
+              </div>
             </div>
-            <div class="collection-item" v-if="searchResults.length === 0">No datasets found</div>
-          </ul>
+            <div class="z-depth-2 collection-item" v-if="searchResults.length === 0">No datasets found</div>
+          </div>
           <div v-else>
             <a :href="node.properties.landingPage" target="_blank" class="hoverable">
               <h5 id="node-title">{{ node.properties.name }}</h5>
@@ -24,7 +26,7 @@
             <div id="node-properties">
             <!-- Fill in with node info -->
             <button class="waves-effect waves-light btn w-100" @click="setNode">View Relations</button>
-            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" target="_blank" style="margin-top: 5px">Check it out!</a>
+            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" v-if="node.properties.landingPage" target="_blank" style="margin-top: 5px">Check it out!</a>
   
             <!-- <h6 id="node-type">Type: {{ node.type }}</h6> -->
 
@@ -43,7 +45,7 @@
 
         <div class="col s9 main" style="padding: 0">
             <nav>
-                <div class="nav-wrapper deep-purple darken-4">
+                <div id="title-bar" class="nav-wrapper ">
                 <img class="title" style="margin-top: 5px" src="./assets/icon.png">
                 <a href="#" class="brand-logo title">Data Visualizer</a>
                 </div>
@@ -51,6 +53,19 @@
 
             <div id="cy-container" class="col s9">
                 <div id="cy" class="content">
+                </div>
+                <div id="legend">
+                  <ul style="margin:0px">
+                    <li><div class="color-key" style="background-color:pink"></div>Dataset</li>
+                    <li><div class="color-key" style="background-color:gold"></div>Agency</li>
+                    <li><div class="color-key" style="background-color:magenta"></div>Bureau</li>
+                    <li><div class="color-key" style="background-color:orangered"></div>Program</li>
+                    <li><div class="color-key" style="background-color:springgreen"></div>Publisher</li>
+                    <li><div class="color-key" style="background-color:crimson"></div>Contact Point</li>
+                    <li><div class="color-key" style="background-color:aquamarine"></div>Keyword</li>
+                    <li><div class="color-key" style="background-color:forestgreen"></div>Theme</li>
+
+                  </ul>
                 </div>
             </div>
 
@@ -132,7 +147,7 @@ export default class App extends Vue {
     let nodes: cytoscape.ElementDefinition[] = [{
       group: "nodes",
       data: { id : dataset.identity.toString(), name: dataset.properties.name },
-      classes: 'Dataset', 
+      classes: dataset.type, 
       selected: true
     }]
     console.log('Setting up cytoscape');
