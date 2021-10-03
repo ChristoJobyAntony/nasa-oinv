@@ -12,39 +12,6 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.static('/home/christo/Code/nasa-oinv/server/app'))
 
-app.get('/Dataset/getAllRelations',
-  // Request Body : {identity : <dataset-id>}
-  // Response Bode : [{relation : {identity : number, type : string}, node : {identity : number, name : string, type : string}}]
-  async (req : Request, res : Response) => {
-    const identity : number = JSON.parse(req.query.identity as string)
-    const session = driver.session()
-    try {
-      const result = await session.run(
-        'MATCH (d:Dataset)-[relation]-(node) WHERE id(d) = $identity return relation, node',
-        { identity: identity }
-      )
-      console.log('Sending Query Result')
-
-      const dat = []
-      for (const record of result.records) {
-        const relation : Relation = record.get('relation')
-        const node : Node = record.get('node')
-        dat.push({ relation: { identity: relation.identity.low, type: relation.type }, node: { identity: node.identity.low, name: node.properties.name, type: node.labels[0] } })
-      }
-      console.log(`Query for relations to ${identity} done, sending response`)
-
-      res.send(dat)
-    } catch (error) {
-      console.log('Query Failed !')
-      console.log(error)
-
-      res.status(400)
-      res.send(error)
-    } finally {
-      await session.close()
-    }
-  })
-
 app.get('/Node/getAllRelations',
   // Request Body : {identity : number}
   // Response Body : [{relation : {identity : number, type : string}, node : {identity : number, type : string, name}}]
