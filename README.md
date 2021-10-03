@@ -8,6 +8,7 @@ The **Interative Data Visualizer** is a Web App that encompasses 44000+ datasets
 ## HOW WE CREATED IT.
 
 To summarize it we tried to read all the data, find relationships, find nodes, establish connections. We discovered such connections by parsing them through python and found words or phrases that are similar. Then this data was added into Neo4J graphing database. 
+
 ### BACK END
 
 The back end of our software is written in Node.js and Typescript. 
@@ -15,6 +16,11 @@ The back end of our software is written in Node.js and Typescript.
 ### FRONT END
 
 The front end of our software is written in TypeScript with Vue JS framework.
+
+### WHAT WE USED?
+
+We got all our information from the **NASA Space Agency Website**(*data.nasa.gov*). Information was extracted from the available .JSON file and constructed the database and connections between the nodes. 
+
 
 ### HOW TO WORK IT OUT!!
 
