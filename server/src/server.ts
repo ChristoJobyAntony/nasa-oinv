@@ -9,7 +9,7 @@ export const app:express.Application = express()
 const driver = neo4j.driver('neo4j://localhost:7687', neo4j.auth.basic('neo4j', 'tony2003'))
 const cors = require('cors')
 
-app.use(cors({ origin: 'http://blacksheep.zapto.org:5555' }))
+app.use(cors())
 app.use(express.static('/home/christo/Code/nasa-oinv/server/app'))
 
 app.get('/Dataset/getAllRelations',
@@ -76,7 +76,7 @@ app.get('/Node/getAllRelations',
       await session.close()
     }
   })
-
+// Depreceated
 app.get('/Dataset/info',
   // Request Body : {identity : number}
   // Response Body : {identity : number, properties : {name : string, identifier : string, landingPage : string, accrualPeriodicity :string, description : string,  dataQuality : string , license :string, issued:string, distribution : object}}
@@ -143,7 +143,7 @@ app.get('/Node/info',
     }
   }
 )
-
+// Depreceated
 app.get('/Dataset/get', 
   async (req: Request, res : Response) =>{
     const session = driver.session()
@@ -172,8 +172,41 @@ app.get('/Dataset/get',
     }
   })
 
+app.get('Node/search',
+// request body : { term : string }
+// response body : [{identity : number, type : stiring, name : string}]
+  async (req: Request, res:Response)=> {
+    const term : string = req.query.term as string
+    console.log('Searching for a node with term : '+ term);
+    const session = driver.session()
+    try {
+      const result = await session.run(
+        'CALL db.index.fulltext.queryNodes("SearchAll",  $term) YIELD node, score RETURN id(node), labels(node)[0], node.name, node.description, score',
+        {term : term}
+      )
 
-app.get('/', async (req : Request, res : Response) => {
+      const dat = []
+      for (const record of result.records) {
+        console.log(record.toObject())
+        const dataset : Dataset = record.get('node')
+        dat.push({ identity: record.get('id(node)'), type: record.get('labels(node)[0]'), name: record.get('node.name')} )
+      }
+
+      res.send(dat)
+    } catch (error) {
+      console.log('Query Failed !')
+      console.log(error)
+
+      res.status(400)
+      res.send(error)
+    } finally {
+      await session.close()
+    }
+
+  }
+)
+
+app.get('/query', async (req : Request, res : Response) => {
   const query : string = req.query.string as string
   const data : any = JSON.parse(req.query.data as string)
   const session = driver.session()

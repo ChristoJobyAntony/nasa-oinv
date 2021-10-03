@@ -1,4 +1,5 @@
 <template>
+  <div>
   <nav>
     <div class="nav-wrapper deep-purple darken-4">
       <img class="title" style="margin-top: 5px" src="./assets/icon.png">
@@ -9,29 +10,37 @@
         </div>
     </div>
   </nav>
-  <div class="row main">
 
-    <div class="s3 nav-bar-left card">
-      <div class="card-content">
-        <span class="card-title">
-            {{ node === null ? "Select a node to Know more about it" : node.properties.name }}
-        </span>
+  <div class="main row" >
+
+    <div class="col s3 info panel left ">
+        <h5 id="node-title">
+          {{ node === null ? "Select a node to Know more about it" : node.properties.name }}
+        </h5>
+        <h6 id="node-type" v-if="node !== null">Type: {{ node.type }}</h6>
         <div id="node-properties" v-if="node !== null">
           <!-- Fill in with node info -->
           <button class="waves-effect waves-light btn" style="width: 100%" @click="setNode">View Relations</button>
-          <button class="waves-effect waves-light btn" v-bind="node" :href="node.properties.landingPage">Check it out!</button>
-          <h6 id="node-type" v-if="node !== null">Type: {{ node.type }}</h6>
+          <br>
+          <button class="waves-effect waves-light btn" style="width: 100%" v-bind="node" :href="node.properties.landingPage">Check it out!</button>
+          <br>
 
-          <ul v-bind:key="name" v-for="(value, name) in node.properties" class="collection">
-             <li class="collection-item" v-if="!['name', 'landingPage'].includes(name)">
-              <b>{{ name }}</b> {{ value }}
-             </li>
+          <ul  class="collection">
+            <div v-bind:key="name" v-for="(value, name) in node.properties" >
+              <li class="collection-item node-property" >
+                <b>{{ name }}</b><hr>
+                <p>
+                  {{ value }}
+                </p>
+              </li>
+            </div>
           </ul>
         </div>
-      </div>
     </div>
-
-    <div id="cy" class="content"></div>
+    <div id="cy-container" class="col s9">
+          <div id="cy" class="content"></div>
+    </div>
+  </div>
   </div>
 </template>
 
