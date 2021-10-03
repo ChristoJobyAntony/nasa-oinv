@@ -1,5 +1,4 @@
 <template>
-  <div>
   <nav>
     <div class="nav-wrapper deep-purple darken-4">
       <img class="title" style="margin-top: 5px" src="./assets/icon.png">
@@ -11,8 +10,7 @@
     </div>
   </nav>
 
-  <div class="main row" >
-
+  <div class="main row">
     <div class="col s3 info panel left ">
         <h5 id="node-title">
           {{ node === null ? "Select a node to Know more about it" : node.properties.name }}
@@ -40,7 +38,6 @@
     <div id="cy-container" class="col s9">
           <div id="cy" class="content"></div>
     </div>
-  </div>
   </div>
 </template>
 
