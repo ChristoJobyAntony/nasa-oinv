@@ -172,7 +172,7 @@ app.get('/Dataset/get',
     }
   })
 
-app.get('Node/search',
+app.get('/Node/search',
 // request body : { term : string }
 // response body : [{identity : number, type : stiring, name : string}]
   async (req: Request, res:Response)=> {
@@ -181,14 +181,12 @@ app.get('Node/search',
     const session = driver.session()
     try {
       const result = await session.run(
-        'CALL db.index.fulltext.queryNodes("SearchAll",  $term) YIELD node, score RETURN id(node), labels(node)[0], node.name, node.description, score',
+        'CALL db.index.fulltext.queryNodes("SearchAll",  $term) YIELD node, score RETURN id(node), labels(node)[0], node.name LIMIT  25',
         {term : term}
       )
 
       const dat = []
       for (const record of result.records) {
-        console.log(record.toObject())
-        const dataset : Dataset = record.get('node')
         dat.push({ identity: record.get('id(node)'), type: record.get('labels(node)[0]'), name: record.get('node.name')} )
       }
 

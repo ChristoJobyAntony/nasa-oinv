@@ -1,44 +1,62 @@
 <template>
-  <nav>
-    <div class="nav-wrapper deep-purple darken-4">
-      <img class="title" style="margin-top: 5px" src="./assets/icon.png">
-      <a href="#" class="brand-logo title">The Black Sheep</a>
-
-        <div class="right input-field" style="margin-right: 10px">
-          <input type="text" placeholder="Search for dataset">
-        </div>
-    </div>
-  </nav>
-
-  <div class="main row">
-    <div class="col s3 info panel left ">
-        <h5 id="node-title">
-          {{ node === null ? "Select a node to Know more about it" : node.properties.name }}
-        </h5>
-        <h6 id="node-type" v-if="node !== null">Type: {{ node.type }}</h6>
-        <div id="node-properties" v-if="node !== null">
-          <!-- Fill in with node info -->
-          <button class="waves-effect waves-light btn" style="width: 100%" @click="setNode">View Relations</button>
-          <br>
-          <button class="waves-effect waves-light btn" style="width: 100%" v-bind="node" :href="node.properties.landingPage">Check it out!</button>
-          <br>
-
-          <ul  class="collection">
-            <div v-bind:key="name" v-for="(value, name) in node.properties" >
-              <li class="collection-item node-property" >
-                <b>{{ name }}</b><hr>
-                <p>
-                  {{ value }}
-                </p>
-              </li>
+    <div class="row main">
+        <div class="col s3 info panel left">
+          <div v-if="node === null">
+            <div class="row" style="margin-top: 10px;">
+              <div class="col s10 offset-s1">
+                <input class="input-field white-text" placeholder="Search for a dataset" type="text" v-model="searchText" v-on:keyup.enter="searchDatasets">
+              </div>
             </div>
-          </ul>
+            <ul class="collection">
+              <div v-bind:key="node.name" v-for="node in searchResults">
+                <li class="collection-item" style="margin-bottom: 5px">
+                  [{{ node.type }} - {{ node.identity.low }}] <br>
+                  {{ node.name }}
+                </li>
+              </div>
+            </ul>
+          </div>
+          <div v-else>
+            <a :href="node.properties.landingPage" target="_blank">
+              <h5 id="node-title">{{ node.properties.name }}</h5>
+            </a>
+            <hr>
+  
+            <div id="node-properties">
+            <!-- Fill in with node info -->
+            <button class="waves-effect waves-light btn w-100" @click="setNode">View Relations</button>
+            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" target="_blank">Check it out!</a>
+  
+            <h6 id="node-type">Type: {{ node.type }}</h6>
+
+            <ul class="collection">
+                <div v-bind:key="name" v-for="(value, name) in node.properties" >
+                <li class="collection-item node-property" >
+                    <b>{{ name }}</b><hr>
+                    <p>
+                    {{ value }}
+                    </p>
+                </li>
+                </div>
+            </ul>
+          </div>
+          </div>
         </div>
-    </div>
-    <div id="cy-container" class="col s9">
-          <div id="cy" class="content"></div>
-    </div>
-  </div>
+
+        <div class="col s9 main" style="padding: 0">
+            <nav>
+                <div class="nav-wrapper deep-purple darken-4">
+                <img class="title" style="margin-top: 5px" src="./assets/icon.png">
+                <a href="#" class="brand-logo title">The Black Sheep</a>
+                </div>
+            </nav>
+
+            <div id="cy-container" class="col s9">
+                <div id="cy" class="content"></div>
+            </div>
+
+        </div>     
+    </div>  
 </template>
 
 <script lang="ts">
@@ -46,6 +64,7 @@ import { Vue } from "vue-class-component";
 import axios from "axios";
 import cytoscape from "cytoscape";
 import cytoscapeConfig from '@/assets/json/cytoscapeConfig.json'
+import M from 'materialize-css';
 
 interface DatasetProperties {
   description: string;
@@ -63,46 +82,49 @@ interface Dataset {
 
 export default class App extends Vue {
   cytoscape?: cytoscape.Core;
-  nodeID!: number;
   node?: Dataset;
+  searchText!: string;
+  searchResults!: Dataset[];
 
   data(): any {
     return {
-      node: null
+      node: null,
+      searchText: '',
+      searchResults: []
     };
   }
 
   async mounted(): Promise<void> {
     console.log("mounted");
-    await this.setUpCytoscape(2131)
-    await this.addRelations(2131)
-
-    this.cytoscape!.on('select', 'node', async (evt) => {
-      this.node = await this.fetchNode(evt.target.id())
-    })
-
-    this.cytoscape!.on('taphold', 'node', async (evt) => {
-      this.node = await this.fetchNode(evt.target.id())
-      await this.setNode()
-    })
+    M.AutoInit()
   }
 
-  async fetchNode(nodeID: number): Promise<Dataset> {
+  async searchDatasets(): Promise<void> {
+    this.searchResults.splice(0, this.searchResults.length)
+    const response = await axios.get('/Node/search', { params: { term: this.searchText }})
+    this.searchResults = response.data
+    console.log(response.data)
+    /*
+    await this.setUpCytoscape(2131)
+    await this.addRelations(2131)
+    */
+  }
+
+  async fetchNode(id: number): Promise<Dataset> {
     const res = await axios.get("/Node/info", {
-      params: { identity: nodeID },
+      params: { identity: id },
     });
     return res.data;
   }
 
-  async fetchNodeRelations(nodeID: number): Promise<any> {
+  async fetchNodeRelations(id: number): Promise<any> {
     const res = await axios.get("/Node/getAllRelations", {
-      params: { identity: nodeID },
+      params: { identity: id },
     });
     return res.data;
   }
   
   async setUpCytoscape(id: number): Promise<void> {
-    console.log('Setting up cytoscape');
     const dataset = await this.fetchNode(id)
     this.node = dataset
     let nodes: cytoscape.ElementDefinition[] = [{
@@ -111,13 +133,21 @@ export default class App extends Vue {
       classes: 'Dataset', 
       selected: true
     }]
-
+    console.log('Setting up cytoscape');
     const config = Object.assign(cytoscapeConfig, {
       container: document.getElementById('cy'),
       elements: nodes
     })
 
     this.cytoscape = cytoscape(config as cytoscape.CytoscapeOptions)
+    this.cytoscape!.on('select', 'node', async (evt) => {
+      this.node = await this.fetchNode(evt.target.id())
+    })
+
+    this.cytoscape!.on('taphold', 'node', async (evt) => {
+      this.node = await this.fetchNode(evt.target.id())
+      await this.setNode()
+    })
   }
 
   async addRelations(id: number) {
