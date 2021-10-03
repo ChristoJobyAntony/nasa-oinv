@@ -1,0 +1,14 @@
+[Unit]
+Description=NASA-OINV Project Visulizer API
+Documentation=https://github.com/ChristoJobyAntony/nasa-oinv
+After=network.target
+
+[Service]
+Environment=NODE_PORT=3001
+Type=simple
+User=christo
+ExecStart=/usr/bin/node /home/christo/Code/nasa-oinv/server/build/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
