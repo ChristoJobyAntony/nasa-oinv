@@ -26,7 +26,7 @@
             <div id="node-properties">
             <!-- Fill in with node info -->
             <button class="waves-effect waves-light btn w-100" @click="setNode">View Relations</button>
-            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" v-if="node.properties.landingPage" target="_blank" style="margin-top: 5px">Check it out!</a>
+            <a class="waves-effect waves-light btn w-100" v-bind="node" :href="node.properties.landingPage" v-if="node.properties.landingPage" target="_blank" style="margin-top: 5px">Visit Webiste</a>
   
             <!-- <h6 id="node-type">Type: {{ node.type }}</h6> -->
 
