@@ -2,6 +2,8 @@
 
 ![Project Logo](/images/project-logo.png)
 
+Project Presentaion: https://docs.google.com/presentation/d/1h3VRkl56IfXWsODN3hJ1WBNuP3VgKtdM4UsgVu0sJSs/edit?usp=sharing
+
 ## INTRODUCTION TO WEB APPLICATION
 
 The **Interative Data Visualizer** is a Web App that encompasses 44000+ datasets in a way that is manageable by even amateur researchers. These data sets can be used as referances or for extracting valuable information. The need for access to credible and reliable sources of information is the aim of this application. 
